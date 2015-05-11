@@ -1,4 +1,5 @@
-import urllib, math
+import urllib, math, glob, os
+from PIL import Image
 
 class Position:
     """GPS pozicio. lat lon"""
@@ -41,7 +42,7 @@ class DownloadArea:
             
         self.origoXY = Tile(x,y,zoom)
         
-    def convertLatLon2XY(self, position, zoom):
+    def convertLatLon2XY(self, position, zoom): #pozicio atszamitas WIKI szerint
         """poziciot tile-re konvertalja """
         lat = math.radians(position.lat)
         n = 2.0 ** zoom
@@ -57,17 +58,27 @@ class DownloadMap:
          
      def downloadTiles(self, dir, downloadArea):
          self.positionXY = Tile(downloadArea.origoXY.x, downloadArea.origoXY.y, downloadArea.origoXY.zoom)
+         mapWidth = downloadArea.width *  256 #terkep szelesseg pixelben
+         mapHeight = downloadArea.height * 256 #terkep magassag pixelben
+         map = Image.new("RGB", (mapWidth, mapHeight), "white") #terkep
+         
          for x in range(0,downloadArea.width):
              for y in range(0,downloadArea.height):
                  url = self.map + str(self.positionXY.zoom) + '/' + str(self.positionXY.x) + '/' + str(self.positionXY.y) + ".png"
-                 file = dir + str(self.positionXY.zoom) + '_' + str(self.positionXY.x) + '_' + str(self.positionXY.y) + ".png"        
-                 self.download(url, file)
+                 file = dir + str(self.positionXY.zoom) + '_' + str(self.positionXY.x) + '_' + str(self.positionXY.y) + ".png"
+                 self.download(url, file) #tile letoltes
                  self.positionXY.y = self.positionXY.y - 1
+                 tile = Image.open(file)
+                 map.paste(tile,(x * 256, mapHeight - (y * 256)-256))
+                 print("%s <OK>" %url)
              self.positionXY.x = self.positionXY.x + 1
              self.positionXY.y = downloadArea.origoXY.y
-            
+             
+         map.save(dir + "map.png")
+             
      def download(self, url, file):
          try:
              urllib.urlretrieve(url, file)
          except:
             self.downloadError = True
+            print("HIBA:%s" %file)

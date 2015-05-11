@@ -1,4 +1,4 @@
-from dowvloadMap import *
+from downloadMap import *
 
 def main():
     poz1 = Position(47.38488, 20.07573)
