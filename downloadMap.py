@@ -1,4 +1,4 @@
-import urllib, math, glob, os
+import urllib, math, glob, os, sys, getopt
 from PIL import Image
 
 class Position:
@@ -53,32 +53,52 @@ class DownloadArea:
  
 class DownloadMap:
      def __init__(self, map):
-         self.map = map
-         self.downloadError = False
+         self.map = map #pl.: http://a.tile.openstreetmap.com/
+         self.downloadError = False #letoltes kozbeni hiba
+         self.wrongTiles = [] #hibas csempek
          
      def downloadTiles(self, dir, downloadArea):
-         self.positionXY = Tile(downloadArea.origoXY.x, downloadArea.origoXY.y, downloadArea.origoXY.zoom)
-         mapWidth = downloadArea.width *  256 #terkep szelesseg pixelben
-         mapHeight = downloadArea.height * 256 #terkep magassag pixelben
-         map = Image.new("RGB", (mapWidth, mapHeight), "white") #terkep
+         positionXY = Tile(downloadArea.origoXY.x, downloadArea.origoXY.y, downloadArea.origoXY.zoom)
+         print("download tiles: %s" %str(downloadArea.width * downloadArea.height))
          
          for x in range(0,downloadArea.width):
              for y in range(0,downloadArea.height):
-                 url = self.map + str(self.positionXY.zoom) + '/' + str(self.positionXY.x) + '/' + str(self.positionXY.y) + ".png"
-                 file = dir + str(self.positionXY.zoom) + '_' + str(self.positionXY.x) + '_' + str(self.positionXY.y) + ".png"
+                 url = self.map + str(positionXY.zoom) + '/' + str(positionXY.x) + '/' + str(positionXY.y) + ".png"
+                 file = dir + str(positionXY.zoom) + '_' + str(positionXY.x) + '_' + str(positionXY.y) + ".png"
                  self.download(url, file) #tile letoltes
-                 self.positionXY.y = self.positionXY.y - 1
-                 tile = Image.open(file)
-                 map.paste(tile,(x * 256, mapHeight - (y * 256)-256))
-                 print("%s <OK>" %url)
-             self.positionXY.x = self.positionXY.x + 1
-             self.positionXY.y = downloadArea.origoXY.y
-             
-         map.save(dir + "map.png")
+                 positionXY.y = positionXY.y - 1
+             positionXY.x = positionXY.x + 1
+             positionXY.y = downloadArea.origoXY.y
+        
+         if self.downloadError != True: #hiba ellenorzes
+             print("Downloading completed!")
+             self.mapCreate(dir, downloadArea)
+         else:
+             print("---E R R O R---")
+             for wrong in self.wrongTiles:
+                print("wrong tile: %s" %wrong)
              
      def download(self, url, file):
          try:
              urllib.urlretrieve(url, file)
          except:
             self.downloadError = True
-            print("HIBA:%s" %file)
+            self.wrongTiles.append(url)        
+            
+     def mapCreate(self, dir, downloadArea):
+        positionXY = Tile(downloadArea.origoXY.x, downloadArea.origoXY.y, downloadArea.origoXY.zoom)
+        mapWidth = downloadArea.width *  256 #terkep szelesseg pixelben
+        mapHeight = downloadArea.height * 256 #terkep magassag pixelben
+        map = Image.new("RGB", (mapWidth, mapHeight), "white") #terkep
+        
+        for x in range(0,downloadArea.width):
+            for y in range(0,downloadArea.height):
+                file = dir + str(positionXY.zoom) + '_' + str(positionXY.x) + '_' + str(positionXY.y) + ".png"
+                tile = Image.open(file)
+                map.paste(tile,(x * 256, mapHeight - (y * 256)-256))
+                positionXY.y = positionXY.y - 1
+            positionXY.x = positionXY.x + 1
+            positionXY.y = downloadArea.origoXY.y
+            
+        map.save(dir + "map.png") #terkep mentes
+        print("Created map: %smap.png" %dir)
