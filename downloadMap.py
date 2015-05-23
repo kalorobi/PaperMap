@@ -95,6 +95,7 @@ class DownloadArea:
 class DownloadMap:
     def __init__(self, map):
         self.map = map
+        print("Map: %s" %self.map)
         self.downloadError = False #letoltes kozbeni hiba
         self.wrongTiles = [] #hibas csempek
          
@@ -129,4 +130,4 @@ class DownloadMap:
             self.downloadError = True
             self.wrongTiles.append(url)
             print("download:%s ->ERROR" %url)
-            
+#================2015.05.21.=================
