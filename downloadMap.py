@@ -1,4 +1,19 @@
-from PIL import Image
+#============================================
+# downloadMap.py    V0.1    2015.05.21.     =
+#                                           =
+# Terkep csempeket megadott konyvtarba tolt =
+#-------------------------------------------=
+# haznalat:                                 =
+# map = "http://a.tile.openstreetmap.org/"  =
+# poz1 = Position(47.38488, 20.07573)       =
+# poz2 = Position(47.35834, 20.10925)       =
+# zoom = 15                                 =
+# dir = "/home/tile/"                       =
+# dwArea = DownloadArea(poz1, poz2, zoom)   =
+# dwMap = DownloadMap(map)                  =
+# dwMap.DownloadTiles(dir, dwArea)          =
+#============================================
+
 import math
 import urllib
 
@@ -98,7 +113,6 @@ class DownloadMap:
         
         if self.downloadError != True: #hiba ellenorzes
             print("Downloading completed!")
-            self.mapCreate(dir, downloadArea)
         else:
             print("---E R R O R---") #ide kell a hiba kezeles
             for wrong in self.wrongTiles:
@@ -116,20 +130,3 @@ class DownloadMap:
             self.wrongTiles.append(url)
             print("download:%s ->ERROR" %url)
             
-    def mapCreate(self, dir, downloadArea): #kulon osztalyba kell tenni
-        positionXY = Tile(downloadArea.origoXY.x, downloadArea.origoXY.y, downloadArea.origoXY.zoom)
-        mapWidth = downloadArea.widthXY * 256 #terkep szelesseg pixelben
-        mapHeight = downloadArea.heightXY * 256 #terkep magassag pixelben
-        map = Image.new("RGB", (mapWidth, mapHeight), "white") #terkep
-        
-        for x in range(0, downloadArea.widthXY):
-            for y in range(0, downloadArea.heightXY):
-                file = dir + str(positionXY.zoom) + '_' + str(positionXY.x) + '_' + str(positionXY.y) + ".png"
-                tile = Image.open(file)
-                map.paste(tile, (x * 256, mapHeight - (y * 256)-256))
-                positionXY.y = positionXY.y - 1
-            positionXY.x = positionXY.x + 1
-            positionXY.y = downloadArea.origoXY.y
-            
-        map.save(dir + "map.png") #terkep mentes
-        print("Created map: %smap.png" %dir)
