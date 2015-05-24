@@ -10,17 +10,20 @@ class Paper(DownloadArea):
     
     def __init__(self, position1, position2, zoom):
         DownloadArea.__init__(self, position1, position2, zoom)
-        print("Map width (XY):%d" %self.widthXY)
-        print("Map height (XY:%d" %self.heightXY)
         
         #------------------------------------
         # lapmerethez aranyositas
         #------------------------------------
         dWidthXY, dHeightXY = self.diffCalc(self.widthXY, self.heightXY)
+        print("Map width (XY): %d + %d" %(self.widthXY, dWidthXY))
+        print("Map height (XY):%d + %d" %(self.heightXY, dHeightXY))
         self.widthXY = self.widthXY + dWidthXY
         self.heightXY = self.heightXY + dHeightXY
         
-        print("deltaW: %i, deltaH: %i" %(dWidthXY, dHeightXY))
+        print("Map origo %d : %d" %(self.origoXY.x, self.origoXY.y))
+        
+        self.origoXY = self.origoCalc(self.origoXY, dWidthXY, dHeightXY)
+        print("Map new o %d : %d" %(self.origoXY.x, self.origoXY.y))
     #----------------------------------------
     # szabvanyos lapmerethez valo elterest
     # szamol. Szabvany 1:1,4142
@@ -45,4 +48,19 @@ class Paper(DownloadArea):
             print("ERROR")
             
         return (self.width - width, self.height - height)
+    #----------------------------------------
+    # uj origot szamol, hogy az eredeti te-
+    # rulet a lap kozepen legyen
+    #----------------------------------------
+    def origoCalc(self, origo, dWidth, dHeight):
+        if dWidth > dHeight:
+            x = int(float(dWhidth) / 2.0)
+            x = origo.x - x
+            y = origo.y
+        else:
+            y = int(float(dHeight) / 2.0)
+            y = origo.y + y
+            x = origo.x
+        
+        return Tile(x,y, origo.zoom)
         
