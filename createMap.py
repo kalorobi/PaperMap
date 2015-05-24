@@ -1,5 +1,6 @@
 from PIL import Image
 from downloadMap import *
+from paper import *
 
 #--------------------------------------------
 # A letoltott csempeket egyetlen map.png
@@ -25,6 +26,6 @@ class CreateMap:
             positionXY.y = downloadArea.origoXY.y
         
         #!!!meretre kell vagni PAPER alapjan!!!
-        
+        map = map.crop(downloadArea.corpBox)
         map.save(dir + "map.png") #terkep mentes
         print("Created map: %smap.png" %dir)

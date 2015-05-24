@@ -11,9 +11,7 @@ class Paper(DownloadArea):
     def __init__(self, position1, position2, zoom):
         DownloadArea.__init__(self, position1, position2, zoom)
         
-        #------------------------------------
         # lapmerethez aranyositas
-        #------------------------------------
         dWidthXY, dHeightXY = self.diffCalc(self.widthXY, self.heightXY)
         print("Map width (XY): %d + %d" %(self.widthXY, dWidthXY))
         print("Map height (XY):%d + %d" %(self.heightXY, dHeightXY))
@@ -21,9 +19,12 @@ class Paper(DownloadArea):
         self.heightXY = self.heightXY + dHeightXY
         
         print("Map origo %d : %d" %(self.origoXY.x, self.origoXY.y))
-        
+        #uj origo az eltolas miatt
         self.origoXY = self.origoCalc(self.origoXY, dWidthXY, dHeightXY)
         print("Map new o %d : %d" %(self.origoXY.x, self.origoXY.y))
+        
+        #kesz terkep vago
+        self.corpBox = self.cutMap(self.widthXY, self.heightXY, dWidthXY, dHeightXY)
     #----------------------------------------
     # szabvanyos lapmerethez valo elterest
     # szamol. Szabvany 1:1,4142
@@ -63,4 +64,21 @@ class Paper(DownloadArea):
             x = origo.x
         
         return Tile(x,y, origo.zoom)
+    
+    def cutMap(self, width, height, dWidth, dHeight):
+        print(width * 256, height * 256)
+        rate = 1.4142 # papir oldalarany
+        w = width * 256  #tile meret
+        h = height * 256 #tile meret
+        if dWidth > dHeight:
+            top = 0
+            left = int((float(w) - float(h) / rate) / 2.0)
+            w = int(float(h) / rate)
+        else:
+            top = int((float(h) - float(w) * rate) / 2.0)
+            h = int(float(w) * rate)
+            left = 0
+        
+        print("top: %d left: %d w: %d h: %d" %(top, left, w, h))
+        return (left, top, w + left, h + top)
         
