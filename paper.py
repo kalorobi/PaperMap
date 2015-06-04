@@ -38,13 +38,13 @@ class Paper(DownloadArea):
         rate = float(self.width) / float(self.height)
         
         if rate < 0.708:    #allo nyujtott
-            self.width = int(float(self.height) / 1.414 + 0.99)
+            self.width = int(math.ceil(float(self.height) / 1.414 + 0.99))
         elif rate > 0.708 and rate < 1.300: #allo
-            self.height = int(float(self.width) * 1.414 + 0.99)
+            self.height = int(math.ceil(float(self.width) * 1.414 + 0.99))
         elif rate > 1.300 and rate < 1.4142: #fekvo
-            self.width = int(float(self.height) * 1.414 + 0.99)
+            self.width = int(math.ceil(float(self.height) * 1.414 + 0.99))
         elif rate > 1.4142: #fekvo nyujtott
-            self.height = int(float(self.width) / 1.414 + 0.99)
+            self.height = int(math.ceil(float(self.width) / 1.414 + 0.99))
         else:
             print("ERROR")
             

@@ -26,6 +26,8 @@ class CreateMap:
             positionXY.y = downloadArea.origoXY.y
         
         #!!!meretre kell vagni PAPER alapjan!!!
-        map = map.crop(downloadArea.corpBox)
+        if isinstance(downloadArea, Paper):
+            map = map.crop(downloadArea.corpBox)
+            print("Map crop")
         map.save(dir + "map.png") #terkep mentes
         print("Created map: %smap.png" %dir)
