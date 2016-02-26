@@ -130,4 +130,5 @@ class DownloadMap:
             self.downloadError = True
             self.wrongTiles.append(url)
             print("download:%s ->ERROR" %url)
+            print("file:%s" %file)
 #================2015.05.21.=================
